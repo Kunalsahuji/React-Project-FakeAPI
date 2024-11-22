@@ -9,8 +9,9 @@ const Context = (props) => {
     const getProducts = async () => {
         try {
             const { data } = await axios('/products')
-            // console.log(data)
             setProducts(data)
+            // console.log(data)
+
         } catch (error) {
             console.log(error)
         }
@@ -18,6 +19,7 @@ const Context = (props) => {
     useEffect(() => {
         getProducts()
     }, [])
+    console.log('products: ', products)
 
     return (
         <div>

@@ -1,44 +1,65 @@
-import axios from '../utils/axios'
-import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import Loading from './Loding'
+import React, { useContext, useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import Loading from './Loding';
+import { ProductContext } from '../utils/Context';
 
 const Details = () => {
-    const [products, setProducts] = useState(null)
-    const { id } = useParams()
-    const getSingleProduct = async () => {
-        try {
-            const { data } = await axios.get(`/products/${id}`)
-            // console.log(data)
-            setProducts(data)
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    const [products] = useContext(ProductContext);
+    const [product, setProduct] = useState(null);
+    const { id } = useParams();
+
+    // const getSingleProduct = async () => {
+    //     try {
+    //         const { data } = await axios.get(/products/${id})
+    //         // console.log(data)
+    //         setProduct(data)
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
+    // useEffect(() => {
+    //     getSingleProduct()
+    // }, [])
+
     useEffect(() => {
-        getSingleProduct()
+        if (!product) {
+            setProduct(products.filter((p) => p.id == id)[0])
+        }
     }, [])
-        
-    return products ? (
-        <div className='w-[70%] flex h-full justify-between items-center m-auto p-[10%] gap-5'>
 
-            <img className='object-contain h-[90%] w-[40%]' src={`${products.image}`} alt="Product-Image" />
+    return product ? (
+        <div className="w-[90%] lg:w-[70%] h-[80%] flex flex-col lg:flex-row items-center m-auto p-5 gap-10 bg-gradient-to-b from-white to-gray-100 shadow-md rounded-lg overflow-x-hidden  overflow-y-auto scroll">
+            <img
+                className="object-contain h-[300px] w-full lg:h-[400px] lg:w-[40%] transition-transform duration-300 hover:scale-105"
+                src={`${product.image}`}
+                alt="Product"
+            />
 
-            <div className='w-[80%] p-3.5' >
-                <h1 className='text-4xl'>{products.title}</h1>
-                <h3 className='text-zinc-400 my-5'>{products.category}</h3>
-                <h2 className='text-red-300 mb-3'>{products.price} </h2>
-                <p className='mb-[5%]'>
-                    {products.description}
-                </p>
+            <div className="w-full lg:w-[60%] flex flex-col items-start p-5">
+                <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-2">{product.title}</h1>
+                <h3 className="text-lg text-gray-500 italic mb-4">{product.category}</h3>
+                <h2 className="text-2xl font-semibold text-red-500 mb-4">${product.price}</h2>
+                <p className="text-gray-700 leading-relaxed mb-6">{product.description}</p>
 
-                <Link className='mr-5 py-2 px-5 border rounded border-blue-200 text-blue-300 '> Edit
-                </Link>
-                <Link className='py-2 px-5 border rounded border-red-200 text-red-300 '> Delete
-                </Link>
+                <div className="flex gap-4">
+                    <Link
+                        to={`/edit/${product.id}`}
+                        className="py-2 px-6 bg-blue-100 text-blue-500 border border-blue-200 rounded transition-all duration-300 hover:bg-blue-500 hover:text-white hover:shadow-md"
+                    >
+                        Edit
+                    </Link>
+                    <Link
+                        to={`/delete/${product.id}`}
+                        className="py-2 px-6 bg-red-100 text-red-500 border border-red-200 rounded transition-all duration-300 hover:bg-red-500 hover:text-white hover:shadow-md"
+                    >
+                        Delete
+                    </Link>
+                </div>
             </div>
         </div>
-    ) : <Loading />
-}
+    ) : (
+        <Loading />
+    );
+};
 
-export default Details
+export default Details;
