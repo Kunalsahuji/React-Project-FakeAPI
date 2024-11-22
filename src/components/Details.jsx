@@ -18,6 +18,7 @@ const Details = () => {
     useEffect(() => {
         getSingleProduct()
     }, [])
+        
     return products ? (
         <div className='w-[70%] flex h-full justify-between items-center m-auto p-[10%] gap-5'>
 
