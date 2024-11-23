@@ -1,17 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Loading from './Loding';
 import { ProductContext } from '../utils/Context';
-
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Details = () => {
-    const [products] = useContext(ProductContext);
+    const [products, setProducts] = useContext(ProductContext);
     const [product, setProduct] = useState(null);
     const { id } = useParams();
+    const navigate = useNavigate()
 
     // const getSingleProduct = async () => {
     //     try {
     //         const { data } = await axios.get(/products/${id})
-    //         // console.log(data)
     //         setProduct(data)
     //     } catch (error) {
     //         console.log(error)
@@ -25,7 +26,18 @@ const Details = () => {
         if (!product) {
             setProduct(products.filter((p) => p.id == id)[0])
         }
-    }, [])
+    }, [id, product, products])
+
+    const productDeleteHandler = (id) => {
+        const filterProducts = products.filter((p) => p.id != id)
+        setProducts(filterProducts)
+        localStorage.setItem("products", JSON.stringify(filterProducts))
+        toast.success("Product Deleted!", {
+            position: "top-right",
+            autoClose: 1000,
+            theme: "colored",
+        }); navigate('/')
+    }
 
     return product ? (
         <div className="w-[90%] lg:w-[70%] h-[80%] flex flex-col lg:flex-row items-center m-auto p-5 gap-10 bg-gradient-to-b from-white to-gray-100 shadow-md rounded-lg overflow-x-hidden  overflow-y-auto scroll">
@@ -44,16 +56,17 @@ const Details = () => {
                 <div className="flex gap-4">
                     <Link
                         to={`/edit/${product.id}`}
+                        onClick={() => toast.info("Editing product...", { position: "bottom-center", autoClose: 1000, theme: 'colored' })}
                         className="py-2 px-6 bg-blue-100 text-blue-500 border border-blue-200 rounded transition-all duration-300 hover:bg-blue-500 hover:text-white hover:shadow-md"
                     >
                         Edit
                     </Link>
-                    <Link
-                        to={`/delete/${product.id}`}
+                    <button
+                        onClick={() => productDeleteHandler(product.id)}
                         className="py-2 px-6 bg-red-100 text-red-500 border border-red-200 rounded transition-all duration-300 hover:bg-red-500 hover:text-white hover:shadow-md"
                     >
                         Delete
-                    </Link>
+                    </button>
                 </div>
             </div>
         </div>

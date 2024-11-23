@@ -2,6 +2,9 @@ import React, { useContext, useState } from 'react';
 import { ProductContext } from '../utils/Context';
 import { nanoid } from 'nanoid';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const Create = () => {
     const navigate = useNavigate();
@@ -11,7 +14,6 @@ const Create = () => {
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState('');
 
-    // Context Data
     const [products, setProducts] = useContext(ProductContext);
 
     const submitHandler = (e) => {
@@ -25,7 +27,7 @@ const Create = () => {
             !price.trim() ||
             !description.trim()
         ) {
-            alert('All fields are mandatory!');
+            toast.error('All fields are mandatory!', { position: 'top-center', autoClose: 1000, theme: 'colored' });
             return;
         }
 
@@ -35,13 +37,14 @@ const Create = () => {
             category.trim().length < 5 ||
             description.trim().length < 5
         ) {
-            alert('Title, category, and description must be at least 5 characters long.');
+            toast.error('Title, category, and description must be at least 5 characters long.', { position: 'top-center', autoClose: 1000, theme: 'colored' });
+
             return;
         }
 
         // Validation for price as a positive number
         if (isNaN(price) || parseFloat(price) <= 0) {
-            alert('Price must be a positive number.');
+            toast.error('Price must be a positive number.', { position: 'top-center', autoClose: 1000, theme: 'colored' });
             return;
         }
 
@@ -57,9 +60,14 @@ const Create = () => {
 
         // Add product to context
         setProducts([...products, product]);
-        // console.log('products:', products);
-        // console.log('product:', product);
 
+
+        localStorage.setItem("products", JSON.stringify([...products, product]))
+        toast.success("Product Created!", {
+            position: "top-center",
+            autoClose: 1000,
+            theme: "colored",
+        });
         navigate('/');
     };
 
@@ -75,6 +83,7 @@ const Create = () => {
                     <label className="block text-gray-600 font-medium mb-2">Image URL</label>
                     <input
                         type="url"
+                        name='image'
                         placeholder="Image URL"
                         className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                         onChange={(e) => setImage(e.target.value)}
@@ -86,6 +95,7 @@ const Create = () => {
                     <label className="block text-gray-600 font-medium mb-2">Title</label>
                     <input
                         type="text"
+                        name="title"
                         placeholder="Title"
                         className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                         onChange={(e) => setTitle(e.target.value)}
@@ -98,6 +108,7 @@ const Create = () => {
                     <input
                         type="text"
                         placeholder="Category"
+                        name="category"
                         className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                         onChange={(e) => setCategory(e.target.value)}
                         value={category}
@@ -109,6 +120,7 @@ const Create = () => {
                     <input
                         type="number"
                         placeholder="Price"
+                        name="price"
                         className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                         onChange={(e) => setPrice(e.target.value)}
                         value={price}
@@ -120,6 +132,7 @@ const Create = () => {
                     <textarea
                         placeholder="Enter product description..."
                         rows="4"
+                        name="description"
                         className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                         onChange={(e) => setDescription(e.target.value)}
                         value={description}
